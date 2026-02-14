@@ -36,7 +36,7 @@ def predict(cherry_tree_df: pd.DataFrame) -> None:
 
 
 def main():
-    cherry_tree_df = pd.read_csv("CherryTree.csv")
+    cherry_tree_df = pd.read_csv("H:/MATC/3_2026 Spring Sem/MachineLearning/mad-2026-spring-ml-algorithms/linear_regression/CherryTree.csv")
     predict(cherry_tree_df)
 
 
