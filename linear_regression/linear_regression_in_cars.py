@@ -5,8 +5,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def predict(cars_df: pd.DataFrame) -> None:
-    predictors_df = cars_df[['enginesize']]
+
+    #part 2
+    body_dummies = pd.get_dummies(cars_df['carbody'], prefix ='carbody')
+    cars_df = pd.concat([cars_df, body_dummies], axis = 1)
+    cars_df = cars_df.drop('carbody', axis=1)
+
+    predictors_df = cars_df[['symboling', 'wheelbase', 'carlength', 'carwidth', 'carheight', 'curbweight', 'enginesize', 'boreratio', 'stroke', 'compressionratio', 'horsepower', 'peakrpm', 'citympg', 'highwaympg'] + list(body_dummies.columns)]
     response_series = cars_df['price'].to_numpy()
+  
 
     #Train and predict.
     algorithm = lm.LinearRegression()
