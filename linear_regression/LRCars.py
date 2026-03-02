@@ -1,15 +1,22 @@
-from urllib import response
+
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import seaborn as sns
 import matplotlib.pyplot as plt 
 
-cars_df = pd.read_csv('cars.csv')
+cars_df = pd.read_csv('linear_regression/cars.csv')
 #print(cars_df.head())
 
 def predict(cars_df):
-    predictors = cars_df[['enginesize']]
-    #predictors = cars_df['enginesize']
+    encoded_cols = pd.get_dummies(cars_df['carbody'])
+    cars_df = pd.concat([encoded_cols, cars_df], axis=1)
+    columns_to_keep = ['symboling', 'wheelbase', 'carlength', 'carwidth', 'carheight', 
+        'curbweight', 'enginesize', 'boreratio', 'stroke', 'compressionratio', 
+        'horsepower', 'peakrpm', 'citympg', 'highwaympg', 
+        'convertible', 'hardtop', 'hatchback', 'sedan', 'wagon', 
+        'price']
+    cars_df = cars_df[columns_to_keep]
+    predictors = cars_df.drop(columns=['price'])
     return predictors
 
 predictors_df = predict(cars_df)
