@@ -5,6 +5,7 @@ import sklearn.linear_model as lm
 # Add plotting imports
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
+import seaborn as sns
 
 
 def predict(cherry_tree_df: pd.DataFrame) -> None:
@@ -16,9 +17,29 @@ def predict(cherry_tree_df: pd.DataFrame) -> None:
     # Won't work with Season as strings!
     # predictors_df = cherry_tree_df[['Height', 'Diam', 'Season']]
     predictors_df = cherry_tree_df[['Height', 'Diam']]
-    predictors_df = pd.concat([predictors_df, one_hot_encoded_columns], axis='columns')
+    # predictors_df = pd.concat([predictors_df, one_hot_encoded_columns], axis='columns')
     # print(predictors_df)
+
+    # Most of this block is for linearity.
+    predictors_and_response_df = pd.concat([predictors_df, cherry_tree_df['Volume']], axis='columns')
+    print(predictors_and_response_df)
+    correlation_matrix = predictors_and_response_df.corr()
+    volume_correlation_matrix = correlation_matrix[['Volume']].sort_values(by='Volume', ascending=False)
+    print(volume_correlation_matrix)
+    # print(correlation_matrix)
+    sns.heatmap(volume_correlation_matrix, annot=True)
+    plt.show()
+
+    # For independence.
+    print(correlation_matrix)
+    mask = abs(correlation_matrix < 0.3)
+    sns.heatmap(correlation_matrix, annot=True, mask=mask)
+    plt.show()
+
     response_series = cherry_tree_df['Volume'].to_numpy()
+
+    print(predictors_df)
+    print(response_series)
 
     # Train and predict.
     algorithm = lm.LinearRegression()
@@ -31,34 +52,23 @@ def predict(cherry_tree_df: pd.DataFrame) -> None:
     r_squared = model.score(predictors_df, response_series)
     print(f"r^2: {r_squared}")
 
-    # # 3D plot: Diameter and Height as independent variables, Volume as dependent.
-    # fig = plt.figure(figsize=(9, 7))
-    # ax = fig.add_subplot(111, projection="3d")
+    # Plot: Height (x) vs Volume (y)
+    height = cherry_tree_df["Height"].to_numpy()
+    volume = cherry_tree_df["Volume"].to_numpy()
 
-    # diam = cherry_tree_df["Diam"].to_numpy()
-    # height = cherry_tree_df["Height"].to_numpy()
-    # volume = cherry_tree_df["Volume"].to_numpy()
+    # Best-fit line (simple linear regression: Volume ~ Height)
+    slope, intercept = np.polyfit(height, volume, 1)
+    height_line = np.linspace(height.min(), height.max(), 200)
+    volume_line = slope * height_line + intercept
 
-    # # Scatter of observed data
-    # ax.scatter(diam, height, volume, s=40)
-
-    # # Overlay the fitted regression plane
-    # diam_grid = np.linspace(diam.min(), diam.max(), 25)
-    # height_grid = np.linspace(height.min(), height.max(), 25)
-    # diam_mesh, height_mesh = np.meshgrid(diam_grid, height_grid)
-
-    # # Model was fit with predictors_df columns ['Height', 'Diam']
-    # coef_height, coef_diam = model.coef_
-    # volume_pred_mesh = model.intercept_ + coef_diam * diam_mesh + coef_height * height_mesh
-    # # ax.plot_surface(diam_mesh, height_mesh, volume_pred_mesh, alpha=0.25, linewidth=0)
-
-    # ax.set_xlabel("Diam")
-    # ax.set_ylabel("Height")
-    # ax.set_zlabel("Volume")
-    # ax.set_title("Cherry Tree Volume vs Diameter and Height")
-    # plt.tight_layout()
-    # plt.show()
-
+    plt.figure(figsize=(9, 7))
+    plt.scatter(height, volume, s=40)
+    plt.plot(height_line, volume_line)
+    plt.xlabel("Height")
+    plt.ylabel("Volume")
+    plt.title("Cherry Tree Volume vs Height")
+    plt.tight_layout()
+    plt.show()
 
 def main():
     cherry_tree_df = pd.read_csv("CherryTree.csv")
