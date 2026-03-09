@@ -19,7 +19,7 @@ def predict(cars_df: pd.DataFrame) -> None:
     predictors_df = pd.concat([predictors_df, one_hot_encoded_columns], axis='columns')
     response_series = cars_df['price'].to_numpy()
 
-    #LAB2 Testing Linearity
+    #LAB2 Testing Linearity##
     predictors_and_response_df = pd.concat([predictors_df, cars_df['price']], axis = 'columns')
     print(predictors_and_response_df)
     correlation_matrix = predictors_and_response_df.corr()
