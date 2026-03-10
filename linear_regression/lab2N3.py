@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import sklearn.linear_model as lm
-
+import sklearn.metrics as metrics
 
 # Add plotting imports
 import matplotlib.pyplot as plt
@@ -18,16 +18,6 @@ def predict(cars_df: pd.DataFrame) -> None:
     predictors_df = cars_df[['symboling', 'wheelbase', 'carlength', 'carwidth', 'carheight', 'curbweight', 'enginesize', 'boreratio', 'stroke', 'compressionratio', 'horsepower', 'peakrpm', 'citympg', 'highwaympg']]
     predictors_df = pd.concat([predictors_df, one_hot_encoded_columns], axis='columns')
     response_series = cars_df['price'].to_numpy()
-
-    #LAB2 Testing Linearity##
-    predictors_and_response_df = pd.concat([predictors_df, cars_df['price']], axis = 'columns')
-    print(predictors_and_response_df)
-    correlation_matrix = predictors_and_response_df.corr()
-    print(f"This is the correlation matrix \n {correlation_matrix}")
-    volume_correlation_matrix = correlation_matrix[['price']].sort_values(by='price', ascending=False)
-    ## next on short by "volume_correlation_matrix"
-    sns.heatmap(volume_correlation_matrix, annot=True)
-    plt.show()
 
     # Train and predict.
     algorithm = lm.LinearRegression()
@@ -49,11 +39,38 @@ def predict(cars_df: pd.DataFrame) -> None:
     plt.tight_layout()
     plt.show()
 
+    return (predictors_df, cars_df)
+
+def testing_linearity(predictors_df, cars_df):
+    ##LAB2 Testing Linearity##
+    predictors_and_response_df = pd.concat([predictors_df, cars_df['price']], axis = 'columns')
+    print(predictors_and_response_df)
+    correlation_matrix = predictors_and_response_df.corr()
+    print(f"This is the correlation matrix \n {correlation_matrix}")
+    volume_correlation_matrix = correlation_matrix[['price']].sort_values(by='price', ascending=False)
+    ## next on short by "volume_correlation_matrix"
+    sns.heatmap(volume_correlation_matrix, annot=True)
+    plt.show()
+
+    return predictors_df
+
+
+def testing_ind(predictors_df):
+    #Lab 3 Testing Independence
+    predictors_correlation = predictors_df.corr()
+    cor_mask = predictors_correlation <= 0.8
+    sns.heatmap(predictors_correlation, mask=cor_mask, annot=True)
+    plt.show()
+
+    return predictors_df
 
 def main():
     cars_df = pd.read_csv("H:/MATC/3_2026 Spring Sem/MachineLearning/labackup/cars.csv")
-    predict(cars_df)
-    print(cars_df)
+    (predictors_df, cars_df) = predict(cars_df)
+    print(f'my dataframe \n {predictors_df}')
+    test_linearity = testing_linearity(predictors_df, cars_df)
+    test_individuality = testing_ind(predictors_df)
+
 
 if __name__ == "__main__":
     main()
