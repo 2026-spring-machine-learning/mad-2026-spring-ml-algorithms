@@ -34,8 +34,7 @@ def evaluate_model(model, X, y):
 #predict next season
 def predict_next(model, next_data):
     X_next = next_data.drop(columns=['Name'])
-    preds = model.predict(X_next)
-    return preds
+    return model.predict(X_next)
 
 #get top 3
 def get_top_3(next_data, preds):
@@ -54,6 +53,8 @@ def plot_results(y, preds):
 
 def main():
     past_data, next_data = load_data()
+    #print("Correlation with survival score:")
+    #print(past_data.drop(columns=['Name']).corr()['SurvivalScore'].sort_values(ascending=False))
     X, y = split_features_target(past_data)
     model = train_model(X, y)
     preds = evaluate_model(model, X, y)
