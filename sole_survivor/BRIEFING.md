@@ -1,4 +1,4 @@
-# Sole Survivor — Briefing
+# Sole Survivor Briefing
 
 ## 1. Did the Experts Do a Good Job?
 
@@ -23,7 +23,7 @@ The remaining features (Leadership, SurvivalSkills, etc.) weren't individually s
 | RMSE        | 7.85   |
 | MAE         | 5.69   |
 
-Residuals look clean — no obvious patterns, and roughly normally distributed.
+Residuals look clean. There are no obvious patterns, and roughly normally distributed.
 
 ## 3. Charts
 
@@ -35,7 +35,7 @@ Saved in `sole_survivor/graphs/`:
 - `residuals.png`
 - `feature_importance.png`
 
-## 4. Next Season — Top 3 Picks
+## 4. Next Season Top 3 Picks:
 
 | Rank | Name  | Predicted Score |
 |------|-------|-----------------|
