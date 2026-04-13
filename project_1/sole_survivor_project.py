@@ -4,6 +4,11 @@ import sklearn.linear_model as lm
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+#r is different than r2. The error is with r2.r
+#HEATMAP: needs to be above .3 (REMOVE LEADERSHIP)
+#change briefing.
+#sole-survivor-2
+
 
 #Function that finds which variables from the predictors are correlated
 def predictor_correlation(predictors_df: pd.DataFrame, threshold: float = 0.8) -> None:
@@ -12,10 +17,11 @@ def predictor_correlation(predictors_df: pd.DataFrame, threshold: float = 0.8) -
     sns.heatmap(predictor_correlation, annot=True, mask=(predictor_correlation <= threshold))
     plt.show()
 
-#Function that drops the variables from the predictors that are correlated
+#Function that drops the variables from the predictors that are correlated OR have an r value in the heatmap between -.3 and .3
 def drop_correlated_variables(predictors):
     number_predictors = predictors.drop(columns=['Teamwork'])
     number_predictors = number_predictors.drop(columns=['Adaptability'])
+    number_predictors = number_predictors.drop(columns= 'Leadership')
     return number_predictors
 
 def analyze_past(sole_survivor_past_df: pd.DataFrame) -> None:
@@ -24,6 +30,7 @@ def analyze_past(sole_survivor_past_df: pd.DataFrame) -> None:
     number_predictors = drop_correlated_variables(number_predictors)
 
     predictors = number_predictors.drop(columns='SurvivalScore')
+
 
     predictor_correlation(predictors, threshold=.8)
     response_series = sole_survivor_past_df['SurvivalScore']
@@ -36,6 +43,7 @@ def analyze_past(sole_survivor_past_df: pd.DataFrame) -> None:
     plt.figure(figsize=(8, 6))
     sns.heatmap(number_predictors.corr()[['SurvivalScore']], annot=True)
     plt.show()
+
   
     #Linear Regression model used for future seasons
     model = lm.LinearRegression().fit(predictors, response_series)
@@ -78,6 +86,5 @@ if __name__ == "__main__":
 
 
 """ Briefing :
-As for if the survivalist did a good job or not, I am a little bit conflicted to give a definitive answer. Although the R² value shows that all of the variables, when analyzed together, provide a reasonable prediction of the final SurvivalScore, the heatmap shows that each specific variable does not have a strong correlation to Survival Score. This could mean one of two things. One: The specific variables do not have a strong correlation, but when analyzing the variables all together will give you a stronger idea on what the final Survival Score will be. Two: There is no strong correlation and the observed relationships could be influenced by chance. I would almost recommend analyzing data from another season, if possible, to get a better understanding if the survivalists are doing a good job or not. 
-
+The survivalist did do a good job predicting. The R² value (which is .8078...) shows that all of the variables, when analyzed together, provide a reasonable prediction of the final Survival Score.
 """

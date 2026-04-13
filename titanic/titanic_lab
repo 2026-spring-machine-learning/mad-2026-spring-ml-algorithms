@@ -1,0 +1,14 @@
+import pandas as pd
+
+
+def main():
+
+    titanic = pd.read_csv(r"mad-2026-spring-ml-algorithms\project_1\sole_survivor_past.csv")
+    print(titanic.isna().sum())
+    titanic = titanic.dropna()
+    print(titanic)
+    print(titanic.isna().sum())
+
+
+if __name__ == "__main__":
+    main()
