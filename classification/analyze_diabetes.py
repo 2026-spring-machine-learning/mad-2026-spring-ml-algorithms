@@ -7,7 +7,7 @@ import imblearn.over_sampling as ios
 
 def read_diabetes():
      """Read the pa_diabetes.csv file into a pandas DataFrame."""
-     df = pd.read_csv("pa_diabetes.csv")
+     df = pd.read_csv("H:/MATC/3_2026 Spring Sem/MachineLearning/mad-2026-spring-ml-algorithms/classification/pa_diabetes.csv")
      return df
 
 
