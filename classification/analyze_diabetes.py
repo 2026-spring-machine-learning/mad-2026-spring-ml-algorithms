@@ -2,7 +2,40 @@ import numpy as np
 import pandas as pd
 import sklearn.model_selection as ms
 import sklearn.linear_model as lm
+import sklearn.ensemble as es
+import sklearn.metrics as metrics
 import imblearn.over_sampling as ios
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+def compute_confusion_matrix_numbers(actual_data_df, prediction):
+    confusion_tuple = metrics.confusion_matrix(actual_data_df, prediction)
+    command_line_display_as_accuracy_top_confusion_matrix = confusion_tuple.T
+    command_line_display_as_accuracy_top_confusion_matrix = np.flip(command_line_display_as_accuracy_top_confusion_matrix, axis=0)
+    command_line_display_as_accuracy_top_confusion_matrix = np.flip(command_line_display_as_accuracy_top_confusion_matrix, axis=1)
+    true_negs = 0
+    false_poss = 0
+    false_negs = 0
+    true_poss = 0
+    sensitivity = 0
+    specificity = 0
+    if len(confusion_tuple.ravel()) == 4:
+        (true_negs, false_poss, false_negs, true_poss) = confusion_tuple.ravel()
+        if ((true_poss + false_negs) > 0) and ((true_negs + false_poss) > 0):
+            sensitivity = true_poss / (true_poss + false_negs)
+            specificity = true_negs / (true_negs + false_poss)
+    return (confusion_tuple, command_line_display_as_accuracy_top_confusion_matrix, true_negs, false_poss, false_negs, true_poss, sensitivity, specificity)
+
+
+def create_confusion_matrix(actual_data_df, prediction):
+    (confusion_tuple, command_line_display_as_accuracy_top_confusion_matrix, true_negs, false_poss, false_negs, true_poss, sensitivity, specificity) \
+        = compute_confusion_matrix_numbers(actual_data_df, prediction)
+    # if (sensitivity > 0) or (specificity > 0):
+    #     print(f'tp: {true_poss}, fn: {false_negs}, tn: {true_negs}, fp: {false_poss}, sensitivity: {sensitivity}, specificity: {specificity}.')
+    # print(command_line_display_as_accuracy_top_confusion_matrix)
+    sns.heatmap(confusion_tuple, annot=True)
+    plt.show()
 
 
 def read_diabetes():
@@ -37,6 +70,7 @@ def perform_logistic_regression(predictors, response, balance_counter):
         # print(diabetes_response_testing)
 
         algorithm = lm.LogisticRegression(max_iter=100000)
+        # algorithm = es.RandomForestClassifier()
         model = algorithm.fit(diabetes_predictors_training, diabetes_response_training)
         predictions = model.predict(diabetes_predictors_testing)
         # print("Predictions:")
@@ -49,6 +83,8 @@ def perform_logistic_regression(predictors, response, balance_counter):
         # print(f"all_zeros: {all_zeros}")
         show_accuracy(diabetes_response_testing, predictions)
         # show_accuracy(diabetes_response_testing, all_zeros)
+
+        # create_confusion_matrix(diabetes_response_testing, predictions)
 
 
 def analyze(diabetes_df):
