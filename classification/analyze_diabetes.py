@@ -50,41 +50,34 @@ def show_accuracy(diabetes_response_testing, predictions):
 
 
 def perform_logistic_regression(predictors, response, balance_counter):
-    for random_state in range(0, 3):
-        if balance_counter == 1:
-            random_over_sampler = ios.RandomOverSampler(random_state=random_state)
-            predictors, response \
-                = random_over_sampler.fit_resample(predictors, response)
+    # for random_state in range(0, 3):
+    #     if balance_counter == 1:
+    #         random_over_sampler = ios.RandomOverSampler(random_state=random_state)
+    #         predictors, response \
+    #             = random_over_sampler.fit_resample(predictors, response)
 
-        (diabetes_predictors_training, diabetes_predictors_testing,
-        diabetes_response_training, diabetes_response_testing) = \
-            ms.train_test_split(predictors, response, test_size=0.2,
-            random_state=random_state) #, random_state=0)
-        # print("Training Predictors:")
-        # print(diabetes_predictors_training)
-        # print("Training Response:")
-        # print(diabetes_response_training)
-        # print("Testing Predictors:")
-        # print(diabetes_predictors_testing)
-        # print("Testing Response:")
-        # print(diabetes_response_testing)
+    (diabetes_predictors_training, diabetes_predictors_testing,
+    diabetes_response_training, diabetes_response_testing) = \
+        ms.train_test_split(predictors, response, test_size=0.2)
+        # random_state=random_state) #, random_state=0)
 
-        algorithm = lm.LogisticRegression(max_iter=100000)
-        # algorithm = es.RandomForestClassifier()
-        model = algorithm.fit(diabetes_predictors_training, diabetes_response_training)
-        predictions = model.predict(diabetes_predictors_testing)
-        # print("Predictions:")
-        # print(predictions)
-        # print("Actual:")
-        # print(diabetes_response_testing.values)
-        # print("Comparison:")
-        # print(predictions == diabetes_response_testing.values)
-        # all_zeros = np.zeros_like(diabetes_response_testing)
-        # print(f"all_zeros: {all_zeros}")
-        show_accuracy(diabetes_response_testing, predictions)
-        # show_accuracy(diabetes_response_testing, all_zeros)
+    algorithm = lm.LogisticRegression(max_iter=100000)
+    # algorithm = es.RandomForestClassifier()
+    model = algorithm.fit(diabetes_predictors_training, diabetes_response_training)
+    predictions = model.predict(diabetes_predictors_testing)
+    show_accuracy(diabetes_response_testing, predictions)
+    # show_accuracy(diabetes_response_testing, all_zeros)
 
-        # create_confusion_matrix(diabetes_response_testing, predictions)
+    # create_confusion_matrix(diabetes_response_testing, predictions)
+
+
+# Cross-validation. Sklearn makes it almost too simple. It's hard to remember
+# that it's performing many steps that we often perform manually.
+def perform_logistic_regression_with_cross_validation(predictors, response):    
+    algorithm = lm.LogisticRegression(max_iter=100000)
+    scores = \
+        ms.cross_val_score(algorithm, predictors, response, scoring='accuracy', cv=10)
+    print(f"Scores: {scores}, average: {np.mean(scores)}")
 
 
 def analyze(diabetes_df):
@@ -94,12 +87,14 @@ def analyze(diabetes_df):
     response = diabetes_df['Outcome']
     # print(predictors.columns)
 
-    for balance_counter in range(2):
-        if balance_counter == 0:
-            print("Unbalanced:")
-        else:
-            print("Balanced:")
-        perform_logistic_regression(predictors, response, balance_counter)
+    # for balance_counter in range(2):
+    #     if balance_counter == 0:
+    #         print("Unbalanced:")
+    #     else:
+    #         print("Balanced:")
+    #     perform_logistic_regression(predictors, response, balance_counter)
+
+    perform_logistic_regression_with_cross_validation(predictors, response)
 
 
 def main():
