@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from imblearn.over_sampling import RandomOverSampler
 from scipy import stats
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 
@@ -13,11 +13,12 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 DATA_FILE = SCRIPT_DIR / "Titanic-Dataset.csv"
 NUMERIC_PREDICTORS = ["Pclass", "Age", "SibSp", "Parch", "Fare"]
 RESPONSE = "Survived"
+MODEL_NAME = "Random Forest"
 
 
 def load_and_clean_data():
     df = pd.read_csv(DATA_FILE)
-    print("Titanic Logistic Regression Classification")
+    print(f"Titanic {MODEL_NAME} Classification")
     print("=" * 42)
     print(f"Raw shape: {df.shape}")
     print("\nNA counts before cleaning:")
@@ -80,8 +81,8 @@ def split_dataset(data, predictors, random_state):
     return train_test_split(X, y, test_size=0.2, random_state=random_state)
 
 
-def fit_logistic_model(X_train, y_train, random_state):
-    model = LogisticRegression(max_iter=100_000, random_state=random_state)
+def fit_random_forest_model(X_train, y_train, random_state):
+    model = RandomForestClassifier(n_estimators=100, random_state=random_state)
     model.fit(X_train, y_train)
     return model
 
@@ -104,7 +105,7 @@ def print_model_results(y_test, prediction, random_state, label=""):
     accuracy = accuracy_score(y_test, prediction)
     tp, tn = get_tp_tn(y_test, prediction)
     tag = f" [{label}]" if label else ""
-    print(f"\nLogistic Regression Accuracy (random_state={random_state}){tag}: {accuracy:.4f}")
+    print(f"\n{MODEL_NAME} Accuracy (random_state={random_state}){tag}: {accuracy:.4f}")
     print(f"  True Positives (TP): {tp}")
     print(f"  True Negatives (TN): {tn}")
     print("\nConfusion Matrix:")
@@ -121,13 +122,13 @@ def compare_all_ones_baseline(y_test, model_accuracy, random_state, label=""):
     print(f"All-1s Baseline Accuracy (random_state={random_state}){tag}: {baseline_accuracy:.4f}")
     if abs(model_accuracy - baseline_accuracy) < 0.02:
         print(
-            "The all-1s baseline performs about as well as logistic regression "
+            f"The all-1s baseline performs about as well as {MODEL_NAME.lower()} "
             "on this split."
         )
     elif model_accuracy > baseline_accuracy:
-        print("Logistic regression performs better than the all-1s baseline.")
+        print(f"{MODEL_NAME} performs better than the all-1s baseline.")
     else:
-        print("The all-1s baseline performs better than logistic regression.")
+        print(f"The all-1s baseline performs better than {MODEL_NAME.lower()}.")
     return baseline_accuracy
 
 
@@ -150,7 +151,7 @@ def main():
     print(f"\nTraining samples: {X_train.shape[0]}")
     print(f"Testing samples:  {X_test.shape[0]}")
 
-    model = fit_logistic_model(X_train, y_train, random_state=1)
+    model = fit_random_forest_model(X_train, y_train, random_state=1)
     prediction = model.predict(X_test)
 
     print_prediction_details(prediction)
@@ -170,7 +171,7 @@ def main():
     print(f"\nResampled training samples: {X_train_res.shape[0]}")
     print(f"Resampled class distribution:\n{pd.Series(y_train_res).value_counts().to_string()}")
 
-    model_res = fit_logistic_model(X_train_res, y_train_res, random_state=1)
+    model_res = fit_random_forest_model(X_train_res, y_train_res, random_state=1)
     prediction_res = model_res.predict(X_test)
 
     accuracy_res, tp_after, tn_after = print_model_results(
