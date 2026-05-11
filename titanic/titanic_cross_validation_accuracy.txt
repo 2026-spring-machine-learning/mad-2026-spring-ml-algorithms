@@ -1,0 +1,4 @@
+Titanic Random Forest 10-Fold Cross-Validation
+Predictors used: Age, SibSp, Fare, Sex_encoded
+Fold accuracies: 0.7895, 0.7895, 0.6842, 0.8333, 0.7222, 0.7778, 0.6667, 0.6667, 0.8889, 0.6667
+Mean accuracy: 0.7485
