@@ -7,6 +7,7 @@ import sklearn.metrics as metrics
 import imblearn.over_sampling as ios
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pathlib import Path
 
 
 def compute_confusion_matrix_numbers(actual_data_df, prediction):
@@ -40,7 +41,8 @@ def create_confusion_matrix(actual_data_df, prediction):
 
 def read_diabetes():
      """Read the pa_diabetes.csv file into a pandas DataFrame."""
-     df = pd.read_csv("pa_diabetes.csv")
+     csv_path = Path(__file__).resolve().parent / "pa_diabetes.csv"
+     df = pd.read_csv(csv_path)
      return df
 
 
