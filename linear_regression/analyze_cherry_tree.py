@@ -3,6 +3,7 @@ import pandas as pd
 import sklearn.linear_model as lm
 import sklearn.model_selection as ms
 import sklearn.metrics as metrics
+from pathlib import Path
 
 # Add plotting imports
 import matplotlib.pyplot as plt
@@ -87,7 +88,8 @@ def predict(cherry_tree_df):
 
 
 def main():
-    cherry_tree_df = pd.read_csv("CherryTree.csv")
+    csv_path = Path(__file__).resolve().parent / "CherryTree.csv"
+    cherry_tree_df = pd.read_csv(csv_path)
     predict(cherry_tree_df)
 
 
